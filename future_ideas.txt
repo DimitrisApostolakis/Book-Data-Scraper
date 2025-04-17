@@ -1,0 +1,2 @@
+* Maybe categorize the "no-category" books with NLP via the description or the title.
+* Maybe find a better algorith to scrape the books.
