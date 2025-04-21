@@ -25,8 +25,10 @@ def fetch_book_details(book_url, title, rating_text):
         price = round(converter.convert(float(price_text[1:]), "GBP", "EUR"), 1)
 
         rating = numbers_conversion.get(rating_text, 0)
+        description = soup.find("meta", attrs={"name": "description"})["content"]
 
-        return [title, rating, price, stock, category]
+
+        return [title, rating, price, stock, category, description]
 
     except Exception as e:
         print(f"Error fetching book: {title} — {type(e).__name__}: {e}")
@@ -53,6 +55,8 @@ def scraper(page):
 
             book_entries.append((full_url, title, rating_text))
 
+        fetch_book_details(full_url, title, rating_text)
+
         with ThreadPoolExecutor(max_workers=10) as book_executor:
             book_data = book_executor.map(lambda args: fetch_book_details(*args), book_entries)
 
@@ -65,13 +69,12 @@ def scraper(page):
         return []
 
 
-
 with ThreadPoolExecutor(max_workers=5) as executor:
     results = executor.map(scraper, range(1, 51))
 
 all_books = [book for page in results for book in page]
 
-bookshelf = pd.DataFrame(all_books, columns=["Title", "Rating", "Price", "Stock", "Category"])
+bookshelf = pd.DataFrame(all_books, columns=["Title", "Rating", "Price", "Stock", "Category", "Description"])
 
 print(f"Total books scraped: {len(bookshelf)}")
 bookshelf.to_csv("bookshelf.csv", index=False)
