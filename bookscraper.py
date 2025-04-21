@@ -77,4 +77,4 @@ all_books = [book for page in results for book in page]
 bookshelf = pd.DataFrame(all_books, columns=["Title", "Rating", "Price", "Stock", "Category", "Description"])
 
 print(f"Total books scraped: {len(bookshelf)}")
-bookshelf.to_csv("bookshelf.csv", index=False)
+bookshelf.to_csv("./csv/bookshelf.csv", index=False)

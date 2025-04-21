@@ -3,7 +3,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import Pipeline
 import pandas as pd
 
-df = pd.read_csv("bookshelf.csv")
+df = pd.read_csv("./csv/bookshelf.csv")
 
 df['Category'] = df['Category'].replace({"Add a comment": "Default"})
 # print(df.isna().sum().sum())
@@ -25,6 +25,10 @@ model.fit(text, labeled_data['Category'].values)
 
 predicted = model.predict([title + " " + desc for title, desc in zip(unlabeled_data['Title'].values, unlabeled_data['Description'].values)])
 
-unlabeled_data.loc[:, 'Predicted_Category'] = predicted
+unlabeled_data.loc[: , 'Category'] = predicted
 
-print(unlabeled_data['Predicted_Category'].value_counts())
+updated_bookshelf = pd.concat([labeled_data, unlabeled_data], ignore_index=True)
+
+print(f"All the uncategorized books have a new category now: {len(predicted) == len(unlabeled_data['Category'])}")
+
+updated_bookshelf.to_csv("./csv/updated_bookshelf.csv", index=False)
