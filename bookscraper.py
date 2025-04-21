@@ -25,7 +25,9 @@ def fetch_book_details(book_url, title, rating_text):
         price = round(converter.convert(float(price_text[1:]), "GBP", "EUR"), 1)
 
         rating = numbers_conversion.get(rating_text, 0)
-        description = soup.find("meta", attrs={"name": "description"})["content"]
+        description = soup.find("meta", attrs={"name": "description"})["content"].replace('"', "'")
+        description = re.sub(r'\s+', ' ', description)
+        description = description.strip()
 
 
         return [title, rating, price, stock, category, description]
@@ -54,8 +56,6 @@ def scraper(page):
             rating_text = book.p["class"][1]
 
             book_entries.append((full_url, title, rating_text))
-
-        fetch_book_details(full_url, title, rating_text)
 
         with ThreadPoolExecutor(max_workers=10) as book_executor:
             book_data = book_executor.map(lambda args: fetch_book_details(*args), book_entries)
